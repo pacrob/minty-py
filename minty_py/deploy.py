@@ -72,11 +72,16 @@ async def deploy_contract(
             if isinstance(dict_receipt[key], HexBytes):
                 dict_receipt[key] = dict_receipt[key].hex()
         
-
-        breakpoint()
+        deployment_info = {
+            "contract_address": dict_receipt["contractAddress"],
+            "token_name": token_name,
+            "token_symbol": token_symbol,
+            "abi": abi,
+            "tx_receipt": dict_receipt,
+        }
 
         with open(output_file, "w") as f:
-            json.dump(dict(dict_receipt), f, indent=4)
+            json.dump(dict(deployment_info), f, indent=4)
 
         print(f"transaction receipt saved as {output_file}")
         return
