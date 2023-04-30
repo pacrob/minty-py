@@ -104,7 +104,7 @@ async def deploy(contract, output, name, symbol):
 async def create_nft(image_path, name, description, owner):
     print("You called create_nft")
     minty = await make_minty()
-
+    
     options = {"name": name, "description": description, "owner": owner}
     nft = await minty.create_nft_from_asset_file(image_path, options)
     print("🌿 Minted a new NFT: ")
@@ -125,6 +125,9 @@ async def create_nft(image_path, name, description, owner):
 async def get_nft(token_id, creation_info):
     print("You called get_nft")
     minty = await make_minty()
+    
+    breakpoint()
+
     nft = await minty.get_nft(token_id, creation_info)
 
     output = [
@@ -159,18 +162,7 @@ async def pin_nft_data(token_id):
     print(f"🌿 Pinned all data for token id {token_id}")
 
 
-# ---- replace these placeholders with actual implementations
-
-
-async def make_minty():
-    # Implement the make_minty function
-    pass
-
-
-async def save_deployment_info(info, filename):
-    # Implement the save_deployment_info function
-    pass
-
+# --- helpers --- #
 
 def align_output(label_value_pairs):
     max_label_length = max(len(label) for label, _ in label_value_pairs)

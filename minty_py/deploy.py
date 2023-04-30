@@ -1,4 +1,6 @@
+import asyncio
 import importlib
+import os.path
 import json
 
 from web3 import (
@@ -11,9 +13,6 @@ from web3.types import (
 
 from minty_py.config.local_info import (
     INFURA_SEPOLIA_URL,
-    INFURA_IPFS_API_KEY,
-    INFURA_IPFS_API_KEY_SECRET,
-    INFURA_IPFS_ENDPOINT,
     SECRET_KEY,
 )
 
@@ -71,7 +70,7 @@ async def deploy_contract(
         for key in dict_receipt.keys():
             if isinstance(dict_receipt[key], HexBytes):
                 dict_receipt[key] = dict_receipt[key].hex()
-        
+
         deployment_info = {
             "contract_address": dict_receipt["contractAddress"],
             "token_name": token_name,
@@ -91,8 +90,49 @@ async def deploy_contract(
         return
 
 
-async def load_deployment_info(deployment_info_filename=None):
-    if not deployment_info_filename:
-        print("no contract deployment info provided")
-    else:
-        print(f"loading from {deployment_info_filename}")
+async def load_deployment_info():
+    filename = "minty_py/contracts/minty_py_deployment.json"
+
+    def file_exists():
+        return os.path.isfile(filename)
+
+    def load_json():
+        with open(filename, "r") as f:
+            return json.load(f)
+
+    def validate_keys(data):
+        required_keys = {
+            "contract_address",
+            "token_name",
+            "token_symbol",
+            "abi",
+            "tx_receipt",
+        }
+        keys = set(data.keys())
+
+        missing_keys = required_keys - keys
+        extra_keys = keys - required_keys
+
+        return missing_keys, extra_keys
+
+    # Check if the file exists
+    if not await asyncio.to_thread(file_exists):
+        raise FileNotFoundError(f"{filename} not found")
+
+    # Load the JSON data
+    data = await asyncio.to_thread(load_json)
+
+    # Validate the keys
+    missing_keys, extra_keys = validate_keys(data)
+
+    if missing_keys or extra_keys:
+        error_message = []
+
+        if missing_keys:
+            error_message.append(f"Missing keys: {', '.join(missing_keys)}")
+        if extra_keys:
+            error_message.append(f"Extra keys: {', '.join(extra_keys)}")
+
+        raise ValueError("; ".join(error_message))
+
+    return data

@@ -17,7 +17,7 @@ from minty_py.deploy import load_deployment_info
 
 
 async def make_minty():
-    m = Minty()
+    m = await Minty()
     return m
 
 
@@ -34,13 +34,13 @@ class Minty:
             return
 
         async def closure():
-            self.deploy_info = load_deployment_info()
+            self.deploy_info = await load_deployment_info()
 
             abi, address = (
-                self.deploy_info["contract"]["abi"],
-                self.deploy_info["contract"]["address"],
+                self.deploy_info["abi"],
+                self.deploy_info["contract_address"],
             )
-            self.contract = await self.hardhat.ethers.get_contract_at(abi, address)
+            # self.contract = await self.hardhat.ethers.get_contract_at(abi, address)
 
             # self.ipfs = IPFSClient(config["ipfsApiUrl"])
             self.ipfs = "meow-ipfs"
@@ -51,6 +51,7 @@ class Minty:
 
         return closure().__await__()
 
+'''
     async def create_nft_from_asset_file(self, filename, options):
         async with aiofiles.open(filename, mode="rb") as f:
             content = await f.read()
@@ -120,3 +121,4 @@ class Minty:
 
         if fetch_creation_info:
             nft
+'''
