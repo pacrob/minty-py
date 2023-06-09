@@ -7,10 +7,12 @@ import asyncio
 from pathlib import Path
 from web3 import (
     AsyncHTTPProvider,
-    Web3,
+    AsyncWeb3,
 )
 
-# from eth_abi import decode_single
+from minty_py.config.local_info import (
+    INFURA_SEPOLIA_URL,
+)
 
 
 from minty_py.deploy import load_deployment_info
@@ -23,11 +25,11 @@ async def make_minty():
 
 class Minty:
     def __init__(self):
-        self.ipfs = None
+        self._initialized = False
         self.contract = None
         self.deploy_info = None
+        self.ipfs = None
         self.w3 = None
-        self._initialized = False
 
     def __await__(self):
         if self._initialized:
@@ -40,7 +42,8 @@ class Minty:
                 self.deploy_info["abi"],
                 self.deploy_info["contract_address"],
             )
-            # self.contract = await self.hardhat.ethers.get_contract_at(abi, address)
+            self.w3 = AsyncWeb3(AsyncHTTPProvider(INFURA_SEPOLIA_URL))
+            self.contract = await self.contract(abi=abi, address=address)
 
             # self.ipfs = IPFSClient(config["ipfsApiUrl"])
             self.ipfs = "meow-ipfs"
@@ -51,7 +54,6 @@ class Minty:
 
         return closure().__await__()
 
-'''
     async def create_nft_from_asset_file(self, filename, options):
         async with aiofiles.open(filename, mode="rb") as f:
             content = await f.read()
@@ -59,6 +61,7 @@ class Minty:
             content, {**options, "path": filename}
         )
 
+'''
     async def create_nft_from_asset_data(self, content, options):
         file_path = options.get("path", "asset.bin")
         basename = os.path.basename(file_path)

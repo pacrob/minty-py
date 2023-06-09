@@ -26,13 +26,20 @@ def main():
 ### MINT nft
 @main.command()
 @click.argument("image_path")
-@click.option("-n", "--name", prompt="NFT Name", help="The name of the NFT")
 @click.option(
-    "-d", "--description", prompt="NFT Description", help="A description of the NFT"
+    "-n", "--name", default="Test Mint", prompt="NFT Name", help="The name of the NFT"
+)
+@click.option(
+    "-d",
+    "--description",
+    default="A basic test of mint",
+    prompt="NFT Description",
+    help="A description of the NFT",
 )
 @click.option(
     "-o",
     "--owner",
+    default="0x8d009B14CE7c2A51A97888710F221DD94aC2361D",
     prompt="Owner Address",
     help="The Ethereum address that should own the NFT.",
 )
@@ -104,8 +111,10 @@ async def deploy(contract, output, name, symbol):
 async def create_nft(image_path, name, description, owner):
     print("You called create_nft")
     minty = await make_minty()
-    
+
+    breakpoint()
     options = {"name": name, "description": description, "owner": owner}
+    
     nft = await minty.create_nft_from_asset_file(image_path, options)
     print("🌿 Minted a new NFT: ")
 
@@ -125,7 +134,7 @@ async def create_nft(image_path, name, description, owner):
 async def get_nft(token_id, creation_info):
     print("You called get_nft")
     minty = await make_minty()
-    
+
     breakpoint()
 
     nft = await minty.get_nft(token_id, creation_info)
@@ -163,6 +172,7 @@ async def pin_nft_data(token_id):
 
 
 # --- helpers --- #
+
 
 def align_output(label_value_pairs):
     max_label_length = max(len(label) for label, _ in label_value_pairs)
