@@ -1,13 +1,13 @@
-import click
-import os
-import json
 import asyncio
+import json
+import os
 from functools import wraps
 
+import click
+
+from minty_py.deploy import deploy_contract
 from minty_py.minty import make_minty
-from minty_py.deploy import (
-    deploy_contract,
-)
+from minty_py.minty_types import NFTOptions
 
 
 def coro(f):
@@ -112,10 +112,10 @@ async def create_nft(image_path, name, description, owner):
     print("You called create_nft")
     minty = await make_minty()
 
-    breakpoint()
-    options = {"name": name, "description": description, "owner": owner}
+    # breakpoint()
+    options = NFTOptions(name=name, description=description, owner=owner, image_path=image_path)
     
-    nft = await minty.create_nft_from_asset_file(image_path, options)
+    nft = await minty.create_nft_from_asset_file(options)
     print("🌿 Minted a new NFT: ")
 
     align_output(

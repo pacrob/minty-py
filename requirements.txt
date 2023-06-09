@@ -1,3 +1,6 @@
+aiofiles
 click
 black
 web3
+isort
+ipython

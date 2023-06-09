@@ -1,21 +1,17 @@
-import os
-import json
-import aiohttp
 import asyncio
-
-# import aiofiles
+import json
 from pathlib import Path
-from web3 import (
-    AsyncHTTPProvider,
-    AsyncWeb3,
-)
 
-from minty_py.config.local_info import (
-    INFURA_SEPOLIA_URL,
-)
+import aiofiles
+import aiohttp
+from web3 import AsyncHTTPProvider, AsyncWeb3
 
-
+from minty_py.config.local_info import (INFURA_IPFS_API_KEY,
+                                        INFURA_IPFS_API_KEY_SECRET,
+                                        INFURA_IPFS_ENDPOINT,
+                                        INFURA_SEPOLIA_URL)
 from minty_py.deploy import load_deployment_info
+from minty_py.minty_types import NFTOptions
 
 
 async def make_minty():
@@ -43,7 +39,8 @@ class Minty:
                 self.deploy_info["contract_address"],
             )
             self.w3 = AsyncWeb3(AsyncHTTPProvider(INFURA_SEPOLIA_URL))
-            self.contract = await self.contract(abi=abi, address=address)
+            # breakpoint()
+            self.contract = self.w3.eth.contract(abi=abi, address=address)
 
             # self.ipfs = IPFSClient(config["ipfsApiUrl"])
             self.ipfs = "meow-ipfs"
@@ -54,19 +51,17 @@ class Minty:
 
         return closure().__await__()
 
-    async def create_nft_from_asset_file(self, filename, options):
-        async with aiofiles.open(filename, mode="rb") as f:
+    async def create_nft_from_asset_file(self, options: NFTOptions):
+        async with aiofiles.open(options.image_path, mode="rb") as f:
             content = await f.read()
-        return await self.create_nft_from_asset_data(
-            content, {**options, "path": filename}
-        )
+            breakpoint()
+        return await self.create_nft_from_asset_data(content, options)
 
-'''
     async def create_nft_from_asset_data(self, content, options):
-        file_path = options.get("path", "asset.bin")
-        basename = os.path.basename(file_path)
+        basename = Path(options.image_path)
 
         ipfs_path = "/nft/" + basename
+        breakpoint()
         asset_cid = await self.ipfs.add(
             {"path": ipfs_path, "content": content}, ipfs_add_options
         )
@@ -124,4 +119,3 @@ class Minty:
 
         if fetch_creation_info:
             nft
-'''

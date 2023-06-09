@@ -1,20 +1,12 @@
 import asyncio
 import importlib
-import os.path
 import json
+import os.path
 
-from web3 import (
-    AsyncWeb3,
-    AsyncHTTPProvider,
-)
-from web3.types import (
-    HexBytes,
-)
+from web3 import AsyncHTTPProvider, AsyncWeb3
+from web3.types import HexBytes
 
-from minty_py.config.local_info import (
-    INFURA_SEPOLIA_URL,
-    SECRET_KEY,
-)
+from minty_py.config.local_info import INFURA_SEPOLIA_URL, SECRET_KEY
 
 
 async def deploy_contract(
