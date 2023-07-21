@@ -6,11 +6,14 @@ import aiofiles
 import aiohttp
 from web3 import AsyncHTTPProvider, AsyncWeb3
 
-from minty_py.config.local_info import (INFURA_IPFS_API_KEY,
-                                        INFURA_IPFS_API_KEY_SECRET,
-                                        INFURA_IPFS_ENDPOINT,
-                                        INFURA_SEPOLIA_URL)
+from minty_py.config.local_info import (
+    INFURA_IPFS_API_KEY,
+    INFURA_IPFS_API_KEY_SECRET,
+    INFURA_IPFS_ENDPOINT,
+    INFURA_SEPOLIA_URL,
+)
 from minty_py.deploy import load_deployment_info
+from minty_py.ipfs_client import IPFSClient
 from minty_py.minty_types import NFTOptions
 
 
@@ -42,8 +45,11 @@ class Minty:
             # breakpoint()
             self.contract = self.w3.eth.contract(abi=abi, address=address)
 
-            # self.ipfs = IPFSClient(config["ipfsApiUrl"])
-            self.ipfs = "meow-ipfs"
+            self.ipfs = IPFSClient(
+                INFURA_IPFS_API_KEY,
+                INFURA_IPFS_API_KEY_SECRET,
+                INFURA_IPFS_ENDPOINT,
+            )
 
             self._initialized = True
 
